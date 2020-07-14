@@ -62,10 +62,14 @@ int main(int argc, char *argv[]) {
                         message.push_back(*it);
                     }
                 }
-                // if (cipher.size() % 2 != 0) {
-                //     std::cout << "Error, wrong bigramm\n";
-                //     cipher.clear();
-                // }
+                if (type == decription && (cipher.size() % 2 != 0)) {
+                    std::cout << "Error, wrong bigramm\n";
+                    cipher.clear();
+                }
+                if (type == encription && (message.size() % 2 != 0)) {
+                    std::cout << "Error, wrong message\n";
+                    message.clear();
+                }
             };
             
             void readKey() {

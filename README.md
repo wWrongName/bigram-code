@@ -1,1 +1,3 @@
-# bigram-code
+# Bigram-code
+
+Simple encryptor/decryptor of bigram code

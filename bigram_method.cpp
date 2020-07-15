@@ -13,148 +13,126 @@ Decrypt_this.txt                Encrypt_this.txt
 +---------------------+         +---------------------+
 
 */
-template <class T>
+enum readwrite {encryption, decryption};
+class CryptoClass {
+    private:
+        std::string keyWord;
+        std::vector<char> cipher;
+        std::vector<char> message;
+        u_char matrix[5][5];
+        bool type;
+        char letter = 'a';
+
+        void showResult(std::vector<char>*);
+        char getLetter();
+        void fillMatrix();
+        void readPairs(bool);
+        void readKey();
+        std::tuple<int, int> getIndexesByElement(char);
+        void encryptPair(std::tuple<int, int>&, std::tuple<int, int>&);
+        void decryptPair(std::tuple<int, int>&, std::tuple<int, int>&);
+        int decrypt();
+        int encrypt();
+        void enc_dec(bool);
+
+    public:
+        std::ifstream fin;
+        CryptoClass(char*);
+        void operator()(bool type);
+};
+
+CryptoClass::CryptoClass(char* file) {
+    fin.open(file, std::ios_base::in);
+};
+void CryptoClass::showResult(std::vector<char> *t_arg) {
+    for (auto it = t_arg->begin(); it != t_arg->end(); it++)
+        std::cout << "Result: " << *it;
+};
+char CryptoClass::getLetter() {
+    return (keyWord.find(letter++) == std::string::npos) ? letter - 1 : getLetter();
+};
+void CryptoClass::fillMatrix() {
+    auto it = keyWord.begin();
+    for (auto &pass : matrix)
+        for (auto &element : pass)
+            element = (it != keyWord.end()) ? *it++ : getLetter();
+};
+void CryptoClass::readPairs(bool type) {
+    std::string input;
+    getline(fin, input);
+    for (auto it = input.begin(); it != input.end(); ) {
+        (type ? cipher : message).push_back(*it++);
+    }
+    if ((type ? cipher : message).size() % 2 != 0) {
+        (type ? cipher : message).push_back('a');
+    }
+
+};
+void CryptoClass::readKey() {
+    getline(fin, keyWord);
+};
+std::tuple<int, int> CryptoClass::getIndexesByElement(char required) {
+    for (int i = 0; i < 5; i++)
+        for (int j = 0; j < 5; j++)
+            if (matrix[i][j] == required)
+                return std::make_tuple(i, j);
+};
+void CryptoClass::encryptPair(std::tuple<int, int>& first, std::tuple<int, int>& second) {
+    if (std::get<0>(first) == std::get<0>(second)) {
+        cipher.push_back(matrix[std::get<0>(first) + 1][std::get<1>(first)]);
+        cipher.push_back(matrix[(std::get<0>(second) + 1) % 5][std::get<1>(second)]);
+    }
+    else if (std::get<1>(first) == std::get<1>(second)) {
+        cipher.push_back(matrix[std::get<0>(first)][std::get<1>(first) + 1]);
+        cipher.push_back(matrix[std::get<0>(second)][(std::get<1>(second) + 1) % 5]);
+    }
+    else {
+        cipher.push_back(matrix[std::get<0>(first)][std::get<1>(second)]);
+        cipher.push_back(matrix[std::get<0>(second)][std::get<1>(first)]);
+    }
+};
+void CryptoClass::decryptPair(std::tuple<int, int>& first, std::tuple<int, int>& second) {
+    if (std::get<0>(first) == std::get<0>(second)) {
+        if (std::get<0>(first) - 1 < 0) 
+            message.push_back(matrix[5][std::get<1>(first)]);
+        else 
+             message.push_back(matrix[std::get<0>(first) - 1][std::get<1>(first)]);
+        message.push_back(matrix[std::get<0>(second) - 1][std::get<1>(second)]);
+    }
+    else if (std::get<1>(first) == std::get<1>(second)) {
+        if (std::get<1>(first) - 1 < 0)
+            message.push_back(matrix[std::get<0>(first)][5]);
+        else
+            message.push_back(matrix[std::get<0>(first)][std::get<1>(first) - 1]);
+        message.push_back(matrix[std::get<0>(second)][std::get<1>(second) - 1]);
+    }
+    else {
+        message.push_back(matrix[std::get<0>(first)][std::get<1>(second)]);
+        message.push_back(matrix[std::get<0>(second)][std::get<1>(first)]);
+    }
+};
+
+void CryptoClass::enc_dec(bool type) {
+    auto *val = type ? &cipher : &message;
+    for (auto it = val->begin(); it != val->end(); ) {
+        auto first_letter = getIndexesByElement(*it++);
+        auto second_letter = getIndexesByElement(*it++);
+        (type == encryption) ? encryptPair(first_letter, second_letter) : decryptPair(first_letter, second_letter);
+    }
+    showResult(type ? &message : &cipher);
+};
+
+void CryptoClass::operator()(bool type) {
+    readKey();
+    readPairs(type);
+    fin.close();
+    fillMatrix();
+    enc_dec(type);
+};
+
 int main(int argc, char *argv[]) {
-    enum readwrite {encription, decription};
-    class CryptoClass {
-
-        private:
-            std::string keyWord;
-            std::vector<char> cipher;
-            std::vector<char> message;
-            u_char matrix[5][5];
-
-        public:
-            char letter = 'a';
-            std::ifstream fin;
-
-            CryptoClass::CryptoClass(char* file) {
-                fin.open(file, std::ios_base::in);
-            };
-
-            void showResult(T t_arg) {
-                for (auto it = t_arg.begin(); it != t_arg.end(); it++)
-                    std::cout << *it;
-            };
-
-            char getLetter() {
-                return (keyWord.find(letter++) != std::string::npos) ? letter - 1 : getLetter();
-            };
-
-            void fillMatrix() {
-                auto it = keyWord.begin();
-                for (auto &pass : matrix) {
-                    for (auto &element : pass) {
-                        element = (it != keyWord.end()) ? *it++ : getLetter();
-                    }
-                }
-            };
-
-            void readPairs(bool type) {
-                std::string input;
-                getline(fin, input);
-                for (auto it = input.begin(); it != input.end(); ) {
-                    if (type == decription) {
-                        if (*it++ == 'x' && it != input.end())
-                            cipher.push_back(*it);
-                    }
-                    else {
-                        message.push_back(*it);
-                    }
-                }
-                if (type == decription && (cipher.size() % 2 != 0)) {
-                    std::cout << "Error, wrong bigramm\n";
-                    cipher.clear();
-                }
-                if (type == encription && (message.size() % 2 != 0)) {
-                    std::cout << "Error, wrong message\n";
-                    message.clear();
-                }
-            };
-            
-            void readKey() {
-                getline(fin, keyWord);
-            };
-
-            std::tuple<int, int> getIndexesByElement(char required) {
-                for (int i = 0; i < 6; i++)
-                    for (int j = 0; j < 6; j++)
-                        if (matrix[i][j] == required)
-                            return std::make_tuple(i, j);
-            };
-
-            void encryptPair(std::tuple<int, int>& first, std::tuple<int, int>& second) {
-                if (std::get<0>(first) == std::get<0>(second)) {
-                    message.push_back(matrix[std::get<0>(first) + 1][std::get<1>(first)]);
-                    message.push_back(matrix[(std::get<0>(second) + 1) % 6][std::get<1>(second)]);
-                }
-                else if (std::get<1>(first) == std::get<1>(second)) {
-                    message.push_back(matrix[std::get<0>(first)][std::get<1>(first) + 1]);
-                    message.push_back(matrix[std::get<0>(second)][(std::get<1>(second) + 1) % 6]);
-                }
-                else {
-                    message.push_back(matrix[std::get<0>(first)][std::get<1>(second)]);
-                    message.push_back(matrix[std::get<0>(second)][std::get<1>(first)]);
-                }
-            };
-
-            void decryptPair(std::tuple<int, int>& first, std::tuple<int, int>& second) {
-                if (std::get<0>(first) == std::get<0>(second)) {
-                    if (std::get<0>(first) - 1 < 0) 
-                        message.push_back(matrix[5][std::get<1>(first)]);
-                    else 
-                        message.push_back(matrix[std::get<0>(first) - 1][std::get<1>(first)]);
-                    message.push_back(matrix[std::get<0>(second) - 1][std::get<1>(second)]);
-                }
-                else if (std::get<1>(first) == std::get<1>(second)) {
-                    if (std::get<1>(first) - 1 < 0)
-                        message.push_back(matrix[std::get<0>(first)][5]);
-                    else
-                        message.push_back(matrix[std::get<0>(first)][std::get<1>(first) - 1]);
-                    message.push_back(matrix[std::get<0>(second)][std::get<1>(second) - 1]);
-                }
-                else {
-                    message.push_back(matrix[std::get<0>(first)][std::get<1>(second)]);
-                    message.push_back(matrix[std::get<0>(second)][std::get<1>(first)]);
-                }
-            };
-
-            int decrypt() {
-                readPairs(decription);
-                if (cipher.empty())
-                    return 1;
-                for (auto it = cipher.begin(); it != cipher.end(); ) {
-                    auto first_letter = getIndexesByElement(*it++);
-                    auto second_letter = getIndexesByElement(*it++);
-                    decryptPair(first_letter, second_letter);
-                }
-                showResult(message);
-                return 0;
-            };
-
-            int encrypt() {
-                readPairs(encription);
-                if (message.empty())
-                    return 1;
-                for (auto it = cipher.begin(); it != cipher.end(); ) {
-                    auto first_letter = getIndexesByElement(*it++);
-                    auto second_letter = getIndexesByElement(*it++);
-                    encryptPair(first_letter, second_letter);
-                }
-                showResult(cipher);
-                return 0;
-            };
-
-            int operator()(bool type) {
-                readKey();
-                fin.close();
-                fillMatrix();
-                return (type == encription) ? encrypt() : decrypt();
-            };
-            
-    };
     if (argc != 3) {
-        std::cout << "Please, write type of action [enc (encryption), dec (decription)] and file [cipher]\n";
+        std::cout << "Please, write type of action [enc (encryption), dec (decryption)] and file [cipher]\n";
         return 1;
     }
     CryptoClass cryptographer(argv[2]);
@@ -162,12 +140,13 @@ int main(int argc, char *argv[]) {
         std::cout << "Error. Please check filepath\n";
         return 1;
     }
-    if (argv[1] == "enc")
-        return cryptographer(encription);
-    else if (argv[1] == "dec")
-        return cryptographer(decription);
+    if (std::string(argv[1], 3) == "enc")
+        cryptographer(encryption);
+    else if (std::string(argv[1], 3) == "dec")
+        cryptographer(decryption);
     else {
-        std::cout << "Error. Bad command. Choose encryption (enc) or decription (dec)\n";
+        std::cout << "Error. Bad command. Choose encryption (enc) or decryption (dec)\n";
         return 1;
     }
+    return 0;
 };

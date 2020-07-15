@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.0/litera/bootstrap.min.css" integrity="sha384-Gr51humlTz50RfCwdBYgT+XvbSZqkm8Loa5nWlNrvUqCinoe6C6WUZKHS2WIRx5o" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Bigram cipher</title>
+  </head>
+  <body>
+    <h1 style="margin-top: 10%; margin-bottom: 5%; text-align: center;">Bigram cipher</h1>
+    <div class="form-group" style="position: fixed; width: 25%; height: 10%; left: 20%; margin-top: 1%;">
+      <input id="key" type="text" class="form-control" placeholder="Key word" id="inputDefault">
+    </div>
+    <div class="form-group" style="position: fixed; width: 25%; height: 20%; left: 20%; margin-top: 6%;">
+      <input id="sentence" type="text" class="form-control" placeholder="Sentence" id="inputDefault">
+    </div>
+    <div style="position: fixed; width: 25%; height: 40px; left: 55%; margin-top: 6%;" class="btn-group btn-group-toggle" data-toggle="buttons">
+      <label id="enc0" class="btn btn-primary active">
+        <input type="radio" name="options" id="enc"> Encryption
+      </label>
+      <label id="dec0" class="btn btn-primary">
+        <input type="radio" name="options" id="dec"> Decription
+      </label>
+    </div>
+    <div class="form-group" style="position: fixed; width: 25%; height: 10%; left: 55%; margin-top: 1%;">
+      <input id="result" type="text" class="form-control" placeholder="Result" id="inputDefault">
+    </div>
+    <button type="button" class="btn btn-primary" style="margin-top: 20%; margin-left: 36%; width: 28%;">Run</button>
+  </body>
+</html>

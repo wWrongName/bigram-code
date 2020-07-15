@@ -1,0 +1,27 @@
+{
+  "name": "cipher",
+  "version": "1.0.0",
+  "description": "Simple encryptor/decryptor of bigram code",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wWrongName/bigram-code.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wWrongName/bigram-code/issues"
+  },
+  "homepage": "https://github.com/wWrongName/bigram-code#readme",
+  "devDependencies": {
+    "electron": "^9.1.0"
+  },
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "child_process": "^1.0.2",
+    "node-addon-api": "^3.0.1"
+  }
+}

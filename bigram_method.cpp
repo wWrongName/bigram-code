@@ -66,7 +66,6 @@ void CryptoClass::readPairs(bool type) {
     if ((type ? cipher : message).size() % 2 != 0) {
         (type ? cipher : message).push_back('a');
     }
-
 };
 void CryptoClass::readKey() {
     getline(fin, keyWord);
